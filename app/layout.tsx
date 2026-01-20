@@ -7,6 +7,9 @@ import CosmicBadge from '@/components/CosmicBadge'
 export const metadata: Metadata = {
   title: 'World Travels Food Blog',
   description: 'Discover authentic culinary adventures from around the world - street food, regional cuisines, and hidden local markets.',
+  icons: {
+    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍲</text></svg>',
+  },
 }
 
 export default function RootLayout({
