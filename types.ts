@@ -50,6 +50,23 @@ export interface Post extends CosmicObject {
   };
 }
 
+// Contact Submission type
+export interface ContactSubmission extends CosmicObject {
+  type: 'contact-submissions';
+  metadata: {
+    name: string;
+    email: string;
+    message: string;
+  };
+}
+
+// Contact form data (for form submission)
+export interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
 // API response type
 export interface CosmicResponse<T> {
   objects: T[];

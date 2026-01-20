@@ -44,6 +44,12 @@ export default function Header() {
             >
               Local Markets
             </Link>
+            <Link 
+              href="/contact" 
+              className="text-gray-700 hover:text-accent transition-colors font-medium"
+            >
+              Contact
+            </Link>
           </nav>
           
           {/* Mobile Menu Button */}
@@ -93,6 +99,13 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Local Markets
+              </Link>
+              <Link 
+                href="/contact" 
+                className="text-gray-700 hover:text-accent transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contact
               </Link>
             </div>
           </nav>

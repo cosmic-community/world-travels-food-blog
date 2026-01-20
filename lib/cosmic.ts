@@ -1,9 +1,17 @@
 import { createBucketClient } from '@cosmicjs/sdk'
-import { Post, Author, Category, hasStatus } from '@/types'
+import { Post, Author, Category, hasStatus, ContactFormData } from '@/types'
 
 export const cosmic = createBucketClient({
   bucketSlug: process.env.COSMIC_BUCKET_SLUG as string,
   readKey: process.env.COSMIC_READ_KEY as string,
+  apiEnvironment: 'staging'
+})
+
+// Create a write client for mutations
+export const cosmicWrite = createBucketClient({
+  bucketSlug: process.env.COSMIC_BUCKET_SLUG as string,
+  readKey: process.env.COSMIC_READ_KEY as string,
+  writeKey: process.env.COSMIC_WRITE_KEY as string,
   apiEnvironment: 'staging'
 })
 
@@ -140,5 +148,28 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
       return null
     }
     throw new Error('Failed to fetch category')
+  }
+}
+
+// Create a contact submission
+export async function createContactSubmission(data: ContactFormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    await cosmicWrite.objects.insertOne({
+      title: `Contact from ${data.name}`,
+      type: 'contact-submissions',
+      metadata: {
+        name: data.name,
+        email: data.email,
+        message: data.message
+      }
+    })
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to create contact submission:', error)
+    return { 
+      success: false, 
+      error: 'Failed to submit contact form. Please try again later.' 
+    }
   }
 }
