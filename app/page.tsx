@@ -102,19 +102,14 @@ export default async function HomePage() {
             Discover authentic street food, regional cuisines, and hidden local markets through the eyes of passionate food travelers.
           </p>
           
-          {/* Changed: Added Search Bar to Hero (from main branch) */}
+          {/* Changed: Search Bar with inline button - removed Explore Stories button */}
           <div className="max-w-2xl">
             <SearchBar 
               categories={categories}
               locations={locations}
               showFilters={false}
-              className="mb-6"
             />
           </div>
-          
-          <Link href="#latest" className="btn-primary">
-            Explore Stories
-          </Link>
         </div>
       </section>
       
