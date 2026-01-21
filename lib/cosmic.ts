@@ -151,6 +151,34 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   }
 }
 
+// Search posts by query string - Changed: Added search function (from main branch)
+export async function searchPosts(query: string): Promise<Post[]> {
+  try {
+    const response = await cosmic.objects
+      .find({ type: 'posts' })
+      .props(['id', 'title', 'slug', 'metadata'])
+      .depth(1)
+    
+    const posts = response.objects as Post[]
+    
+    // Filter posts client-side for flexible search
+    const searchLower = query.toLowerCase()
+    return posts.filter((post) => {
+      const titleMatch = post.title.toLowerCase().includes(searchLower)
+      const excerptMatch = post.metadata?.excerpt?.toLowerCase().includes(searchLower) ?? false
+      const locationMatch = post.metadata?.location?.toLowerCase().includes(searchLower) ?? false
+      const contentMatch = post.metadata?.content?.toLowerCase().includes(searchLower) ?? false
+      
+      return titleMatch || excerptMatch || locationMatch || contentMatch
+    })
+  } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      return []
+    }
+    throw new Error('Failed to search posts')
+  }
+}
+
 // Create a contact submission
 export async function createContactSubmission(data: ContactFormData): Promise<{ success: boolean; error?: string }> {
   try {
@@ -174,7 +202,7 @@ export async function createContactSubmission(data: ContactFormData): Promise<{ 
   }
 }
 
-// Create a newsletter subscription
+// Create a newsletter subscription (from newsletter branch)
 export async function createNewsletterSubscription(data: NewsletterFormData): Promise<{ success: boolean; error?: string }> {
   try {
     // Check if email already exists

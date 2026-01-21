@@ -28,3 +28,10 @@
     @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
 }
+
+/* Changed: Added search-specific styles from main branch */
+@layer utilities {
+  .search-highlight {
+    @apply bg-yellow-100 text-yellow-900 px-0.5 rounded;
+  }
+}

@@ -19,7 +19,7 @@ export default function Header() {
           </Link>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             <Link 
               href="/" 
               className="text-gray-700 hover:text-accent transition-colors font-medium"
@@ -49,6 +49,17 @@ export default function Header() {
               className="text-gray-700 hover:text-accent transition-colors font-medium"
             >
               Contact
+            </Link>
+            {/* Changed: Added Search Link (from main branch) */}
+            <Link 
+              href="/search" 
+              className="flex items-center gap-1 text-gray-700 hover:text-accent transition-colors font-medium"
+              aria-label="Search"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span className="sr-only md:not-sr-only">Search</span>
             </Link>
           </nav>
           
@@ -106,6 +117,17 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
+              </Link>
+              {/* Changed: Added Search Link for mobile (from main branch) */}
+              <Link 
+                href="/search" 
+                className="flex items-center gap-2 text-gray-700 hover:text-accent transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Search
               </Link>
             </div>
           </nav>

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getPosts, getCategories, getAuthors } from '@/lib/cosmic'
 import PostCard from '@/components/PostCard'
 import CategoryBadge from '@/components/CategoryBadge'
+import SearchBar from '@/components/SearchBar'
 import NewsletterForm from '@/components/NewsletterForm'
 
 export default async function HomePage() {
@@ -13,6 +14,15 @@ export default async function HomePage() {
   
   const featuredPost = posts[0]
   const recentPosts = posts.slice(1)
+  
+  // Extract unique locations from posts for search filters (from main branch)
+  const locations = Array.from(
+    new Set(
+      posts
+        .map((post) => post.metadata?.location)
+        .filter((location): location is string => !!location)
+    )
+  ).sort()
   
   return (
     <div>
@@ -33,6 +43,17 @@ export default async function HomePage() {
           <p className="text-xl md:text-2xl text-primary-200 max-w-2xl mb-8">
             Discover authentic street food, regional cuisines, and hidden local markets through the eyes of passionate food travelers.
           </p>
+          
+          {/* Changed: Added Search Bar to Hero (from main branch) */}
+          <div className="max-w-2xl">
+            <SearchBar 
+              categories={categories}
+              locations={locations}
+              showFilters={false}
+              className="mb-6"
+            />
+          </div>
+          
           <Link href="#latest" className="btn-primary">
             Explore Stories
           </Link>
@@ -112,7 +133,7 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* Newsletter Section */}
+      {/* Newsletter Section (from newsletter branch) */}
       <section className="bg-accent py-16">
         <div className="container-blog">
           <div className="max-w-2xl mx-auto text-center">

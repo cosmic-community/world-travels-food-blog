@@ -67,7 +67,7 @@ export interface ContactFormData {
   message: string;
 }
 
-// Newsletter Subscriber type
+// Newsletter Subscriber type (from newsletter branch)
 export interface NewsletterSubscriber extends CosmicObject {
   type: 'newsletter-subscribers';
   metadata: {
@@ -76,7 +76,7 @@ export interface NewsletterSubscriber extends CosmicObject {
   };
 }
 
-// Newsletter form data (for form submission)
+// Newsletter form data (for form submission) (from newsletter branch)
 export interface NewsletterFormData {
   name: string;
   email: string;
@@ -96,4 +96,21 @@ export interface CosmicSingleResponse<T> {
 // Type guard for checking if error has status
 export function hasStatus(error: unknown): error is { status: number } {
   return typeof error === 'object' && error !== null && 'status' in error;
+}
+
+// Changed: Added SearchResult interface for search API (from main branch)
+export interface SearchResult {
+  posts: Post[];
+  total: number;
+  query: string;
+  filters: {
+    category?: string;
+    location?: string;
+  };
+}
+
+// Changed: Added SearchFilters interface (from main branch)
+export interface SearchFilters {
+  category?: string;
+  location?: string;
 }
