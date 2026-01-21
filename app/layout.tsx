@@ -3,8 +3,9 @@ import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CosmicBadge from '@/components/CosmicBadge'
+import RandomFavicon from '@/components/RandomFavicon'
 
-// Changed: Enhanced site-wide SEO metadata with keywords and better descriptions
+// Changed: Removed static favicon from metadata - now handled by RandomFavicon component
 export const metadata: Metadata = {
   title: {
     default: 'World Travels Food Blog | Culinary Adventures & Food Travel Stories',
@@ -29,9 +30,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'World Travels Food Blog' }],
   creator: 'World Travels Food Blog',
   publisher: 'World Travels Food Blog',
-  icons: {
-    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍲</text></svg>',
-  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -101,6 +99,8 @@ export default function RootLayout({
         <script src="/dashboard-console-capture.js" />
         {/* Changed: Added JSON-LD for website structured data */}
         <WebsiteJsonLd />
+        {/* Changed: Added random emoji favicon component */}
+        <RandomFavicon />
       </head>
       <body className="min-h-screen flex flex-col">
         <Header />
