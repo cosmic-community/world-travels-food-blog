@@ -14,6 +14,7 @@ interface SearchBarProps {
   onQueryChange?: (query: string) => void
   setLoading?: (loading: boolean) => void
   showFilters?: boolean
+  showDropdown?: boolean // Changed: Added prop to control dropdown visibility
   className?: string
 }
 
@@ -27,6 +28,7 @@ export default function SearchBar({
   onQueryChange,
   setLoading,
   showFilters = true,
+  showDropdown = true, // Changed: Default to true for backwards compatibility
   className = ''
 }: SearchBarProps) {
   const [query, setQuery] = useState(initialQuery)
@@ -75,7 +77,10 @@ export default function SearchBar({
       
       setResults(data.posts.slice(0, 5)) // Show max 5 in dropdown
       setTotalResults(data.total)
-      setShowResults(true)
+      // Changed: Only show results dropdown if showDropdown prop is true
+      if (showDropdown) {
+        setShowResults(true)
+      }
       
       // Changed: Update last search params
       lastSearchParams.current = { query: searchQuery, category: searchCategory, location: searchLocation }
@@ -90,7 +95,7 @@ export default function SearchBar({
       setIsLoading(false)
       setLoading?.(false)
     }
-  }, [onSearch, setLoading])
+  }, [onSearch, setLoading, showDropdown])
 
   // Changed: Debounced search effect with proper cleanup
   useEffect(() => {
@@ -177,7 +182,7 @@ export default function SearchBar({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => hasActiveFilters && setShowResults(true)}
+              onFocus={() => showDropdown && hasActiveFilters && setShowResults(true)}
               placeholder="Search articles..."
               className="w-full pl-10 pr-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none"
             />
@@ -234,8 +239,8 @@ export default function SearchBar({
         </div>
       )}
 
-      {/* Results Dropdown */}
-      {showResults && (query.trim() || category || location) && (
+      {/* Results Dropdown - Changed: Only render if showDropdown is true */}
+      {showDropdown && showResults && (query.trim() || category || location) && (
         <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
           {results.length > 0 ? (
             <>

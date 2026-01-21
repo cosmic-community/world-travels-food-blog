@@ -84,7 +84,7 @@ export default function SearchResults({ categories, locations }: SearchResultsPr
 
   return (
     <div>
-      {/* Search Bar */}
+      {/* Search Bar - Changed: Added showDropdown={false} to disable dropdown on search page */}
       <div className="mb-8">
         <SearchBar
           categories={categories}
@@ -95,6 +95,7 @@ export default function SearchResults({ categories, locations }: SearchResultsPr
           onSearch={handleSearch}
           onQueryChange={handleQueryChange}
           showFilters={true}
+          showDropdown={false}
           setLoading={setIsLoading}
         />
       </div>
