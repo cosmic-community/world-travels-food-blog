@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CosmicBadge from '@/components/CosmicBadge'
 import RandomFavicon from '@/components/RandomFavicon'
+import ScrollToTop from '@/components/ScrollToTop'
 
 // Changed: Removed static favicon from metadata - now handled by RandomFavicon component
 export const metadata: Metadata = {
@@ -103,6 +104,8 @@ export default function RootLayout({
         <RandomFavicon />
       </head>
       <body className="min-h-screen flex flex-col">
+        {/* Changed: Added ScrollToTop component for automatic scroll on navigation */}
+        <ScrollToTop />
         <Header />
         <main className="flex-grow">
           {children}
