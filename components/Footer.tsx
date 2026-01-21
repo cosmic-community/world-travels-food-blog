@@ -1,11 +1,28 @@
 import Link from 'next/link'
+import NewsletterForm from './NewsletterForm'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   
   return (
-    <footer className="bg-primary-900 text-white py-12">
-      <div className="container-blog">
+    <footer className="bg-primary-900 text-white">
+      {/* Newsletter Section */}
+      <div className="border-b border-primary-700">
+        <div className="container-blog py-12">
+          <div className="max-w-2xl mx-auto text-center">
+            <h3 className="font-serif text-2xl font-bold mb-2">
+              🍜 Subscribe to Our Newsletter
+            </h3>
+            <p className="text-primary-300 mb-6">
+              Get the latest food travel stories, recipes, and culinary adventures delivered straight to your inbox.
+            </p>
+            <NewsletterForm variant="compact" />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Footer Content */}
+      <div className="container-blog py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
@@ -47,6 +64,11 @@ export default function Footer() {
               <li>
                 <Link href="/" className="text-primary-300 hover:text-white transition-colors">
                   Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-primary-300 hover:text-white transition-colors">
+                  Contact Us
                 </Link>
               </li>
               <li>

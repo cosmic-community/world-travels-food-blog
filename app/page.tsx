@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getPosts, getCategories, getAuthors } from '@/lib/cosmic'
 import PostCard from '@/components/PostCard'
 import CategoryBadge from '@/components/CategoryBadge'
+import NewsletterForm from '@/components/NewsletterForm'
 
 export default async function HomePage() {
   const [posts, categories, authors] = await Promise.all([
@@ -109,6 +110,23 @@ export default async function HomePage() {
             More stories coming soon...
           </p>
         )}
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="bg-accent py-16">
+        <div className="container-blog">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="font-serif text-3xl font-bold text-white mb-4">
+              🍜 Never Miss a Culinary Adventure
+            </h2>
+            <p className="text-white/90 text-lg mb-8">
+              Subscribe to our newsletter and get the latest food travel stories, authentic recipes, and hidden gem recommendations delivered to your inbox.
+            </p>
+            <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg">
+              <NewsletterForm />
+            </div>
+          </div>
+        </div>
       </section>
       
       {/* Authors */}

@@ -67,6 +67,21 @@ export interface ContactFormData {
   message: string;
 }
 
+// Newsletter Subscriber type
+export interface NewsletterSubscriber extends CosmicObject {
+  type: 'newsletter-subscribers';
+  metadata: {
+    name: string;
+    email: string;
+  };
+}
+
+// Newsletter form data (for form submission)
+export interface NewsletterFormData {
+  name: string;
+  email: string;
+}
+
 // API response type
 export interface CosmicResponse<T> {
   objects: T[];
