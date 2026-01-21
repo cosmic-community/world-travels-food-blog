@@ -1,64 +1,104 @@
 import { Suspense } from 'react'
-import { getCategories, getPosts } from '@/lib/cosmic'
-import SearchResults from '@/components/SearchResults'
-import type { Metadata } from 'next'
+import { getPosts, getCategories } from '@/lib/cosmic'
+import PostCard from '@/components/PostCard'
+import SearchBar from '@/components/SearchBar'
 
-export const metadata: Metadata = {
-  title: 'Search Articles | World Travels Food Blog',
-  description: 'Search through our collection of culinary adventures, food guides, and travel stories from around the world.'
+interface SearchPageProps {
+  searchParams: Promise<{
+    q?: string
+    category?: string
+    location?: string
+  }>
 }
 
-export default async function SearchPage() {
-  const [categories, posts] = await Promise.all([
-    getCategories(),
-    getPosts()
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const params = await searchParams
+  const query = params.q || ''
+  const categoryFilter = params.category || ''
+  const locationFilter = params.location || ''
+
+  const [allPosts, categories] = await Promise.all([
+    getPosts(),
+    getCategories()
   ])
-  
+
   // Extract unique locations from posts
   const locations = Array.from(
     new Set(
-      posts
+      allPosts
         .map((post) => post.metadata?.location)
         .filter((location): location is string => !!location)
     )
   ).sort()
 
-  return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="bg-primary-900 text-white py-12 lg:py-16">
-        <div className="container-blog">
-          <h1 className="font-serif text-3xl md:text-4xl font-bold mb-3">
-            Search Articles
-          </h1>
-          <p className="text-primary-200 text-lg max-w-2xl">
-            Find your next culinary adventure by searching through our collection of food stories, market guides, and regional cuisine explorations.
-          </p>
-        </div>
-      </header>
+  // Filter posts based on search criteria
+  let filteredPosts = allPosts
 
-      {/* Search Content */}
-      <section className="container-blog py-12">
-        <Suspense fallback={
-          <div className="animate-pulse">
-            <div className="h-12 bg-gray-200 rounded-lg mb-6" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i}>
-                  <div className="bg-gray-200 rounded-xl aspect-[4/3] mb-4" />
-                  <div className="h-4 bg-gray-200 rounded mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-2/3" />
-                </div>
-              ))}
-            </div>
+  if (query) {
+    const searchLower = query.toLowerCase()
+    filteredPosts = filteredPosts.filter((post) => {
+      const titleMatch = post.title.toLowerCase().includes(searchLower)
+      const excerptMatch = post.metadata?.excerpt?.toLowerCase().includes(searchLower) ?? false
+      const locationMatch = post.metadata?.location?.toLowerCase().includes(searchLower) ?? false
+      const contentMatch = post.metadata?.content?.toLowerCase().includes(searchLower) ?? false
+      return titleMatch || excerptMatch || locationMatch || contentMatch
+    })
+  }
+
+  if (categoryFilter) {
+    filteredPosts = filteredPosts.filter(
+      (post) => post.metadata?.category?.slug === categoryFilter
+    )
+  }
+
+  if (locationFilter) {
+    filteredPosts = filteredPosts.filter(
+      (post) => post.metadata?.location === locationFilter
+    )
+  }
+
+  const hasFilters = query || categoryFilter || locationFilter
+
+  return (
+    <div className="container-blog py-12">
+      <h1 className="font-serif text-4xl font-bold text-primary-900 mb-8">
+        Search Stories
+      </h1>
+
+      {/* Search Form */}
+      <div className="mb-12">
+        <SearchBar 
+          categories={categories}
+          locations={locations}
+          showFilters={true}
+        />
+      </div>
+
+      {/* Results */}
+      <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
+        {hasFilters && (
+          <p className="text-gray-600 mb-6">
+            {filteredPosts.length === 0 
+              ? 'No stories found matching your search.' 
+              : `Found ${filteredPosts.length} ${filteredPosts.length === 1 ? 'story' : 'stories'}`}
+            {query && <span> for &ldquo;{query}&rdquo;</span>}
+          </p>
+        )}
+
+        {filteredPosts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPosts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
           </div>
-        }>
-          <SearchResults 
-            categories={categories}
-            locations={locations}
-          />
-        </Suspense>
-      </section>
+        ) : !hasFilters ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">
+              Enter a search term or select filters to find stories.
+            </p>
+          </div>
+        ) : null}
+      </Suspense>
     </div>
   )
 }

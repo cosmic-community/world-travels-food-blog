@@ -67,6 +67,21 @@ export interface ContactFormData {
   message: string;
 }
 
+// Newsletter Subscriber type (from newsletter branch)
+export interface NewsletterSubscriber extends CosmicObject {
+  type: 'newsletter-subscribers';
+  metadata: {
+    name: string;
+    email: string;
+  };
+}
+
+// Newsletter form data (for form submission) (from newsletter branch)
+export interface NewsletterFormData {
+  name: string;
+  email: string;
+}
+
 // API response type
 export interface CosmicResponse<T> {
   objects: T[];
@@ -83,7 +98,7 @@ export function hasStatus(error: unknown): error is { status: number } {
   return typeof error === 'object' && error !== null && 'status' in error;
 }
 
-// Changed: Added SearchResult interface for search API
+// Changed: Added SearchResult interface for search API (from main branch)
 export interface SearchResult {
   posts: Post[];
   total: number;
@@ -94,7 +109,7 @@ export interface SearchResult {
   };
 }
 
-// Changed: Added SearchFilters interface
+// Changed: Added SearchFilters interface (from main branch)
 export interface SearchFilters {
   category?: string;
   location?: string;

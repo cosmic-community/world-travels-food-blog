@@ -1,5 +1,5 @@
 import { createBucketClient } from '@cosmicjs/sdk'
-import { Post, Author, Category, hasStatus, ContactFormData } from '@/types'
+import { Post, Author, Category, hasStatus, ContactFormData, NewsletterFormData } from '@/types'
 
 export const cosmic = createBucketClient({
   bucketSlug: process.env.COSMIC_BUCKET_SLUG as string,
@@ -151,7 +151,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   }
 }
 
-// Search posts by query string - Changed: Added search function
+// Search posts by query string - Changed: Added search function (from main branch)
 export async function searchPosts(query: string): Promise<Post[]> {
   try {
     const response = await cosmic.objects
@@ -198,6 +198,48 @@ export async function createContactSubmission(data: ContactFormData): Promise<{ 
     return { 
       success: false, 
       error: 'Failed to submit contact form. Please try again later.' 
+    }
+  }
+}
+
+// Create a newsletter subscription (from newsletter branch)
+export async function createNewsletterSubscription(data: NewsletterFormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check if email already exists
+    try {
+      const existingResponse = await cosmic.objects
+        .find({ type: 'newsletter-subscribers', 'metadata.email': data.email.toLowerCase() })
+        .props(['id'])
+      
+      if (existingResponse.objects && existingResponse.objects.length > 0) {
+        return { 
+          success: false, 
+          error: 'This email is already subscribed to our newsletter.' 
+        }
+      }
+    } catch (error) {
+      // 404 means no existing subscriber found, which is good
+      if (!hasStatus(error) || error.status !== 404) {
+        throw error
+      }
+    }
+
+    // Create new subscriber
+    await cosmicWrite.objects.insertOne({
+      title: `Subscriber: ${data.name}`,
+      type: 'newsletter-subscribers',
+      metadata: {
+        name: data.name,
+        email: data.email.toLowerCase()
+      }
+    })
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to create newsletter subscription:', error)
+    return { 
+      success: false, 
+      error: 'Failed to subscribe. Please try again later.' 
     }
   }
 }

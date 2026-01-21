@@ -50,7 +50,7 @@ export default function Header() {
             >
               Contact
             </Link>
-            {/* Changed: Added Search Link */}
+            {/* Changed: Added Search Link (from main branch) */}
             <Link 
               href="/search" 
               className="flex items-center gap-1 text-gray-700 hover:text-accent transition-colors font-medium"
@@ -118,7 +118,7 @@ export default function Header() {
               >
                 Contact
               </Link>
-              {/* Changed: Added Search Link for mobile */}
+              {/* Changed: Added Search Link for mobile (from main branch) */}
               <Link 
                 href="/search" 
                 className="flex items-center gap-2 text-gray-700 hover:text-accent transition-colors font-medium"
