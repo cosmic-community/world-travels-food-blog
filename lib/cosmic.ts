@@ -1,5 +1,5 @@
 import { createBucketClient } from '@cosmicjs/sdk'
-import { Post, Author, Category, hasStatus, ContactFormData, NewsletterFormData } from '@/types'
+import { Post, Author, Category, Page, hasStatus, ContactFormData, NewsletterFormData } from '@/types'
 
 export const cosmic = createBucketClient({
   bucketSlug: process.env.COSMIC_BUCKET_SLUG as string,
@@ -151,6 +151,23 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   }
 }
 
+// Changed: Added function to get page by slug
+export async function getPageBySlug(slug: string): Promise<Page | null> {
+  try {
+    const response = await cosmic.objects
+      .findOne({ type: 'pages', slug })
+      .props(['id', 'title', 'slug', 'metadata'])
+      .depth(1)
+    
+    return response.object as Page
+  } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      return null
+    }
+    throw new Error('Failed to fetch page')
+  }
+}
+
 // Search posts by query string - Changed: Added search function (from main branch)
 export async function searchPosts(query: string): Promise<Post[]> {
   try {
@@ -218,10 +235,10 @@ export async function createNewsletterSubscription(data: NewsletterFormData): Pr
         }
       }
     } catch (error) {
-      // 404 means no existing subscriber found, which is good
-      if (!hasStatus(error) || error.status !== 404) {
-        throw error
-      }
+        // 404 means no existing subscriber found, which is good
+        if (!hasStatus(error) || error.status !== 404) {
+          throw error
+        }
     }
 
     // Create new subscriber

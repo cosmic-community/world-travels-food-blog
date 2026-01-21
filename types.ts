@@ -50,6 +50,31 @@ export interface Post extends CosmicObject {
   };
 }
 
+// Page type - Changed: Added for CMS-powered pages
+export interface Page extends CosmicObject {
+  type: 'pages';
+  metadata: {
+    title: string;
+    subtitle?: string;
+    content?: string;
+    hero_image?: {
+      url: string;
+      imgix_url: string;
+    };
+    sections?: PageSection[];
+  };
+}
+
+// Page section type for flexible content blocks - Changed: Added for page sections
+export interface PageSection {
+  title: string;
+  content: string;
+  image?: {
+    url: string;
+    imgix_url: string;
+  };
+}
+
 // Contact Submission type
 export interface ContactSubmission extends CosmicObject {
   type: 'contact-submissions';
