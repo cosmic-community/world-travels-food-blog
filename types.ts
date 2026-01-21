@@ -82,3 +82,20 @@ export interface CosmicSingleResponse<T> {
 export function hasStatus(error: unknown): error is { status: number } {
   return typeof error === 'object' && error !== null && 'status' in error;
 }
+
+// Changed: Added SearchResult interface for search API
+export interface SearchResult {
+  posts: Post[];
+  total: number;
+  query: string;
+  filters: {
+    category?: string;
+    location?: string;
+  };
+}
+
+// Changed: Added SearchFilters interface
+export interface SearchFilters {
+  category?: string;
+  location?: string;
+}
