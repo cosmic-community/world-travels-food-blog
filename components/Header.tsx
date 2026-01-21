@@ -44,6 +44,13 @@ export default function Header() {
             >
               Local Markets
             </Link>
+            {/* Changed: Added About link */}
+            <Link 
+              href="/about" 
+              className="text-gray-700 hover:text-accent transition-colors font-medium"
+            >
+              About
+            </Link>
             <Link 
               href="/contact" 
               className="text-gray-700 hover:text-accent transition-colors font-medium"
@@ -110,6 +117,14 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Local Markets
+              </Link>
+              {/* Changed: Added About link for mobile */}
+              <Link 
+                href="/about" 
+                className="text-gray-700 hover:text-accent transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
               </Link>
               <Link 
                 href="/contact" 
