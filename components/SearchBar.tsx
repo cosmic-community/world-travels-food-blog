@@ -10,7 +10,9 @@ interface SearchBarProps {
   initialQuery?: string
   initialCategory?: string
   initialLocation?: string
-  onSearch?: (results: Post[]) => void
+  onSearch?: (results: Post[], total: number) => void
+  onQueryChange?: (query: string) => void
+  setLoading?: (loading: boolean) => void
   showFilters?: boolean
   className?: string
 }
@@ -22,6 +24,8 @@ export default function SearchBar({
   initialCategory = '',
   initialLocation = '',
   onSearch,
+  onQueryChange,
+  setLoading,
   showFilters = true,
   className = ''
 }: SearchBarProps) {
@@ -34,17 +38,31 @@ export default function SearchBar({
   const [totalResults, setTotalResults] = useState(0)
   const searchRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
+  // Changed: Track if this is the initial render to prevent double fetching
+  const isInitialRender = useRef(true)
+  // Changed: Track last search params to prevent duplicate requests
+  const lastSearchParams = useRef({ query: '', category: '', location: '' })
 
+  // Changed: Stabilized performSearch that doesn't depend on onSearch prop
   const performSearch = useCallback(async (searchQuery: string, searchCategory: string, searchLocation: string) => {
+    // Changed: Check if params are the same as last search to prevent duplicate requests
+    if (
+      lastSearchParams.current.query === searchQuery &&
+      lastSearchParams.current.category === searchCategory &&
+      lastSearchParams.current.location === searchLocation
+    ) {
+      return
+    }
+
     if (!searchQuery.trim() && !searchCategory && !searchLocation) {
       setResults([])
       setTotalResults(0)
       setShowResults(false)
-      onSearch?.([])
       return
     }
 
     setIsLoading(true)
+    setLoading?.(true)
     
     try {
       const params = new URLSearchParams()
@@ -58,18 +76,38 @@ export default function SearchBar({
       setResults(data.posts.slice(0, 5)) // Show max 5 in dropdown
       setTotalResults(data.total)
       setShowResults(true)
-      onSearch?.(data.posts)
+      
+      // Changed: Update last search params
+      lastSearchParams.current = { query: searchQuery, category: searchCategory, location: searchLocation }
+      
+      // Changed: Call onSearch callback with results
+      onSearch?.(data.posts, data.total)
     } catch (error) {
       console.error('Search error:', error)
       setResults([])
       setTotalResults(0)
     } finally {
       setIsLoading(false)
+      setLoading?.(false)
     }
-  }, [onSearch])
+  }, [onSearch, setLoading])
 
-  // Debounced search
+  // Changed: Debounced search effect with proper cleanup
   useEffect(() => {
+    // Changed: Skip initial render if we have URL params (parent already fetched)
+    if (isInitialRender.current) {
+      isInitialRender.current = false
+      // Changed: If there are initial params, set last search params to prevent re-fetch
+      if (initialQuery || initialCategory || initialLocation) {
+        lastSearchParams.current = { 
+          query: initialQuery, 
+          category: initialCategory, 
+          location: initialLocation 
+        }
+        return
+      }
+    }
+
     if (debounceRef.current) {
       clearTimeout(debounceRef.current)
     }
@@ -83,7 +121,12 @@ export default function SearchBar({
         clearTimeout(debounceRef.current)
       }
     }
-  }, [query, category, location, performSearch])
+  }, [query, category, location, performSearch, initialQuery, initialCategory, initialLocation])
+
+  // Changed: Notify parent of query changes
+  useEffect(() => {
+    onQueryChange?.(query)
+  }, [query, onQueryChange])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -97,15 +140,17 @@ export default function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setQuery('')
     setCategory('')
     setLocation('')
     setResults([])
     setTotalResults(0)
     setShowResults(false)
-    onSearch?.([])
-  }
+    // Changed: Reset last search params
+    lastSearchParams.current = { query: '', category: '', location: '' }
+    onSearch?.([], 0)
+  }, [onSearch])
 
   const hasActiveFilters = query.trim() || category || location
 

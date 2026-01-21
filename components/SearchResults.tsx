@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import PostCard from '@/components/PostCard'
 import SearchBar from '@/components/SearchBar'
@@ -20,38 +20,67 @@ export default function SearchResults({ categories, locations }: SearchResultsPr
   const [results, setResults] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [totalResults, setTotalResults] = useState(0)
+  
+  // Changed: Use refs to track previous values and prevent unnecessary fetches
+  const hasFetchedRef = useRef(false)
+  const lastParamsRef = useRef({ query: '', category: '', location: '' })
 
-  useEffect(() => {
-    async function fetchResults() {
-      setIsLoading(true)
-      
-      try {
-        const params = new URLSearchParams()
-        if (initialQuery) params.set('q', initialQuery)
-        if (initialCategory) params.set('category', initialCategory)
-        if (initialLocation) params.set('location', initialLocation)
-        
-        const response = await fetch(`/api/search?${params.toString()}`)
-        const data: SearchResult = await response.json()
-        
-        setResults(data.posts)
-        setTotalResults(data.total)
-      } catch (error) {
-        console.error('Search error:', error)
-        setResults([])
-        setTotalResults(0)
-      } finally {
-        setIsLoading(false)
-      }
+  // Changed: Memoize fetch function to prevent recreation
+  const fetchResults = useCallback(async (query: string, category: string, location: string) => {
+    // Changed: Skip if params haven't changed
+    if (
+      hasFetchedRef.current &&
+      lastParamsRef.current.query === query &&
+      lastParamsRef.current.category === category &&
+      lastParamsRef.current.location === location
+    ) {
+      return
     }
     
-    fetchResults()
-  }, [initialQuery, initialCategory, initialLocation])
+    setIsLoading(true)
+    
+    try {
+      const params = new URLSearchParams()
+      if (query) params.set('q', query)
+      if (category) params.set('category', category)
+      if (location) params.set('location', location)
+      
+      const response = await fetch(`/api/search?${params.toString()}`)
+      const data: SearchResult = await response.json()
+      
+      setResults(data.posts)
+      setTotalResults(data.total)
+      
+      // Changed: Update tracking refs after successful fetch
+      hasFetchedRef.current = true
+      lastParamsRef.current = { query, category, location }
+    } catch (error) {
+      console.error('Search error:', error)
+      setResults([])
+      setTotalResults(0)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
-  const handleSearch = (posts: Post[]) => {
+  // Changed: Only fetch on initial mount with URL params
+  useEffect(() => {
+    fetchResults(initialQuery, initialCategory, initialLocation)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Changed: Handle search from SearchBar without causing re-fetch loops
+  const handleSearch = useCallback((posts: Post[], total?: number) => {
     setResults(posts)
-    setTotalResults(posts.length)
-  }
+    setTotalResults(total ?? posts.length)
+    setIsLoading(false)
+  }, [])
+
+  // Changed: Track current search query for display
+  const [displayQuery, setDisplayQuery] = useState(initialQuery)
+  
+  const handleQueryChange = useCallback((query: string) => {
+    setDisplayQuery(query)
+  }, [])
 
   return (
     <div>
@@ -64,7 +93,9 @@ export default function SearchResults({ categories, locations }: SearchResultsPr
           initialCategory={initialCategory}
           initialLocation={initialLocation}
           onSearch={handleSearch}
+          onQueryChange={handleQueryChange}
           showFilters={true}
+          setLoading={setIsLoading}
         />
       </div>
 
@@ -79,9 +110,9 @@ export default function SearchResults({ categories, locations }: SearchResultsPr
             ) : (
               `${totalResults} articles found`
             )}
-            {initialQuery && (
+            {displayQuery && (
               <span className="ml-1">
-                for &ldquo;<span className="font-medium text-primary-900">{initialQuery}</span>&rdquo;
+                for &ldquo;<span className="font-medium text-primary-900">{displayQuery}</span>&rdquo;
               </span>
             )}
           </p>
