@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import Link from 'next/link'
 
 interface MarkdownContentProps {
   content: string
@@ -61,16 +62,34 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
               {children}
             </em>
           ),
-          a: ({ href, children }) => (
-            <a 
-              href={href} 
-              className="text-accent hover:text-accent-dark underline transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {children}
-            </a>
-          ),
+          // Changed: Updated link handling to use Next.js Link for internal links (better SEO and navigation)
+          a: ({ href, children }) => {
+            // Check if it's an internal link (starts with / or is a relative path to posts)
+            const isInternalLink = href?.startsWith('/') || href?.startsWith('#')
+            
+            if (isInternalLink && href) {
+              return (
+                <Link 
+                  href={href} 
+                  className="text-accent hover:text-accent-dark underline transition-colors font-medium"
+                >
+                  {children}
+                </Link>
+              )
+            }
+            
+            // External links open in new tab
+            return (
+              <a 
+                href={href} 
+                className="text-accent hover:text-accent-dark underline transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {children}
+              </a>
+            )
+          },
           hr: () => (
             <hr className="my-8 border-gray-200" />
           ),
