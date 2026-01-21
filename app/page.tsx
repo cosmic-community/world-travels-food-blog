@@ -4,6 +4,61 @@ import PostCard from '@/components/PostCard'
 import CategoryBadge from '@/components/CategoryBadge'
 import SearchBar from '@/components/SearchBar'
 import NewsletterForm from '@/components/NewsletterForm'
+import type { Metadata } from 'next'
+
+// Changed: Added specific metadata for homepage SEO
+export const metadata: Metadata = {
+  title: 'World Travels Food Blog | Authentic Culinary Adventures & Food Travel Guides',
+  description: 'Discover authentic culinary adventures from around the world. From Barcelona\'s La Boqueria market to Tokyo\'s best ramen shops, Bangkok street food to Milan\'s risotto - explore global food culture with passionate travelers.',
+  keywords: [
+    'food blog',
+    'food travel',
+    'culinary adventures',
+    'Barcelona La Boqueria',
+    'Tokyo ramen guide',
+    'Bangkok street food',
+    'pad thai',
+    'risotto Milanese',
+    'street food',
+    'food markets',
+    'regional cuisine',
+    'authentic food',
+    'travel food guide',
+    '2026 food guide',
+  ],
+  openGraph: {
+    title: 'World Travels Food Blog | Authentic Culinary Adventures',
+    description: 'Discover authentic culinary adventures from around the world. Explore street food guides, regional cuisines, and hidden local markets.',
+    type: 'website',
+  },
+}
+
+// Changed: Added JSON-LD for homepage (ItemList of blog posts)
+function HomepageJsonLd({ posts }: { posts: Array<{ title: string; slug: string; metadata?: { excerpt?: string; featured_image?: { imgix_url: string } } }> }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'World Travels Food Blog',
+    description: 'Authentic culinary adventures from around the world',
+    blogPost: posts.slice(0, 10).map((post, index) => ({
+      '@type': 'BlogPosting',
+      position: index + 1,
+      headline: post.title,
+      description: post.metadata?.excerpt || '',
+      url: `/posts/${post.slug}`,
+      image: post.metadata?.featured_image?.imgix_url 
+        ? `${post.metadata.featured_image.imgix_url}?w=800&h=600&fit=crop&auto=format`
+        : undefined,
+    })),
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  )
+}
 
 export default async function HomePage() {
   const [posts, categories, authors] = await Promise.all([
@@ -26,6 +81,9 @@ export default async function HomePage() {
   
   return (
     <div>
+      {/* Changed: Added JSON-LD structured data for homepage */}
+      <HomepageJsonLd posts={posts} />
+      
       {/* Hero Section */}
       <section className="relative bg-primary-900 text-white py-20 lg:py-32">
         <div 
@@ -65,7 +123,7 @@ export default async function HomePage() {
         <section className="container-blog py-16">
           <h2 className="font-serif text-3xl font-bold text-primary-900 mb-8">Featured Story</h2>
           <Link href={`/posts/${featuredPost.slug}`} className="block group">
-            <div className="relative rounded-2xl overflow-hidden shadow-lg card-hover">
+            <article className="relative rounded-2xl overflow-hidden shadow-lg card-hover">
               {featuredPost.metadata?.featured_image?.imgix_url && (
                 <img
                   src={`${featuredPost.metadata.featured_image.imgix_url}?w=1200&h=600&fit=crop&auto=format,compress`}
@@ -100,7 +158,7 @@ export default async function HomePage() {
                   </p>
                 )}
               </div>
-            </div>
+            </article>
           </Link>
         </section>
       )}
