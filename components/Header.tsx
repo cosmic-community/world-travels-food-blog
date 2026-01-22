@@ -44,6 +44,13 @@ export default function Header() {
             >
               Local Markets
             </Link>
+            {/* Changed: Added Recipe Ideas link */}
+            <Link 
+              href="/recipe-ideas" 
+              className="text-gray-700 hover:text-accent transition-colors font-medium"
+            >
+              Recipe Ideas
+            </Link>
             {/* Changed: Added About link */}
             <Link 
               href="/about" 
@@ -117,6 +124,14 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Local Markets
+              </Link>
+              {/* Changed: Added Recipe Ideas link for mobile */}
+              <Link 
+                href="/recipe-ideas" 
+                className="text-gray-700 hover:text-accent transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Recipe Ideas
               </Link>
               {/* Changed: Added About link for mobile */}
               <Link 

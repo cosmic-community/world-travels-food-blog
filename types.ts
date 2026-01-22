@@ -107,6 +107,21 @@ export interface NewsletterFormData {
   email: string;
 }
 
+// Changed: Added Prompt type for Recipe Ideas
+export interface Prompt extends CosmicObject {
+  type: 'prompts';
+  metadata: {
+    prompt?: string;
+    votes?: number;
+  };
+}
+
+// Changed: Added Recipe Idea form data
+export interface RecipeIdeaFormData {
+  title: string;
+  prompt: string;
+}
+
 // API response type
 export interface CosmicResponse<T> {
   objects: T[];

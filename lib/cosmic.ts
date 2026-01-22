@@ -1,5 +1,5 @@
 import { createBucketClient } from '@cosmicjs/sdk'
-import { Post, Author, Category, Page, hasStatus, ContactFormData, NewsletterFormData } from '@/types'
+import { Post, Author, Category, Page, Prompt, hasStatus, ContactFormData, NewsletterFormData, RecipeIdeaFormData } from '@/types'
 
 export const cosmic = createBucketClient({
   bucketSlug: process.env.COSMIC_BUCKET_SLUG as string,
@@ -235,10 +235,10 @@ export async function createNewsletterSubscription(data: NewsletterFormData): Pr
         }
       }
     } catch (error) {
-        // 404 means no existing subscriber found, which is good
-        if (!hasStatus(error) || error.status !== 404) {
-          throw error
-        }
+          // 404 means no existing subscriber found, which is good
+          if (!hasStatus(error) || error.status !== 404) {
+            throw error
+          }
     }
 
     // Create new subscriber
@@ -257,6 +257,83 @@ export async function createNewsletterSubscription(data: NewsletterFormData): Pr
     return { 
       success: false, 
       error: 'Failed to subscribe. Please try again later.' 
+    }
+  }
+}
+
+// Changed: Added functions for Prompts (Recipe Ideas)
+
+// Get all prompts
+export async function getPrompts(): Promise<Prompt[]> {
+  try {
+    const response = await cosmic.objects
+      .find({ type: 'prompts' })
+      .props(['id', 'title', 'slug', 'metadata'])
+      .depth(1)
+    
+    return response.objects as Prompt[]
+  } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      return []
+    }
+    throw new Error('Failed to fetch prompts')
+  }
+}
+
+// Get single prompt by ID
+export async function getPromptById(id: string): Promise<Prompt | null> {
+  try {
+    const response = await cosmic.objects
+      .findOne({ type: 'prompts', id })
+      .props(['id', 'title', 'slug', 'metadata'])
+      .depth(1)
+    
+    return response.object as Prompt
+  } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      return null
+    }
+    throw new Error('Failed to fetch prompt')
+  }
+}
+
+// Create a new prompt (recipe idea)
+export async function createPrompt(data: RecipeIdeaFormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    await cosmicWrite.objects.insertOne({
+      title: data.title,
+      type: 'prompts',
+      metadata: {
+        prompt: data.prompt,
+        votes: 0
+      }
+    })
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to create prompt:', error)
+    return { 
+      success: false, 
+      error: 'Failed to submit recipe idea. Please try again later.' 
+    }
+  }
+}
+
+// Update prompt votes
+export async function updatePromptVotes(id: string, newVoteCount: number): Promise<{ success: boolean; error?: string }> {
+  try {
+    await cosmicWrite.objects.updateOne(id, {
+      metadata: {
+        votes: newVoteCount
+      }
+    })
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to update prompt votes:', error)
+    return { 
+      success: false, 
+      error: 'Failed to update votes. Please try again later.' 
     }
   }
 }
