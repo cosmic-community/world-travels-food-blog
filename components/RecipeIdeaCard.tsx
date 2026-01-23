@@ -1,15 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { voteForRecipeIdea } from '@/app/actions/recipe-ideas'
 import { Prompt } from '@/types'
 
 interface RecipeIdeaCardProps {
   prompt: Prompt
   rank: number
+  onVoteUpdate?: (promptId: string, newVoteCount: number) => void
 }
 
-export default function RecipeIdeaCard({ prompt, rank }: RecipeIdeaCardProps) {
+export default function RecipeIdeaCard({ prompt, rank, onVoteUpdate }: RecipeIdeaCardProps) {
   const [votes, setVotes] = useState(prompt.metadata?.votes || 0)
   const [isVoting, setIsVoting] = useState(false)
   const [hasVoted, setHasVoted] = useState(false)
@@ -22,11 +22,23 @@ export default function RecipeIdeaCard({ prompt, rank }: RecipeIdeaCardProps) {
     setError(null)
 
     try {
-      const result = await voteForRecipeIdea(prompt.id)
+      // Changed: Now using API route instead of server action
+      const response = await fetch('/api/recipe-ideas/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ promptId: prompt.id }),
+      })
+
+      const result = await response.json()
       
       if (result.success) {
-        setVotes(result.newVoteCount ?? votes + 1)
+        const newVoteCount = result.newVoteCount ?? votes + 1
+        setVotes(newVoteCount)
         setHasVoted(true)
+        // Changed: Notify parent component of vote update for real-time reordering
+        onVoteUpdate?.(prompt.id, newVoteCount)
       } else {
         setError(result.error || 'Failed to vote')
       }
