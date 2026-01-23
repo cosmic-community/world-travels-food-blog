@@ -1,14 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { submitRecipeIdea } from '@/app/actions/recipe-ideas'
 
 interface FormState {
   title: string
   prompt: string
 }
 
-export default function RecipeIdeaForm() {
+interface RecipeIdeaFormProps {
+  onSuccess?: () => void
+}
+
+export default function RecipeIdeaForm({ onSuccess }: RecipeIdeaFormProps) {
   const [formData, setFormData] = useState<FormState>({
     title: '',
     prompt: ''
@@ -32,7 +35,16 @@ export default function RecipeIdeaForm() {
     setSubmitStatus({ type: null, message: '' })
 
     try {
-      const result = await submitRecipeIdea(formData)
+      // Changed: Now using API route instead of server action
+      const response = await fetch('/api/recipe-ideas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
       
       if (result.success) {
         setSubmitStatus({
@@ -40,6 +52,8 @@ export default function RecipeIdeaForm() {
           message: '🎉 Your recipe idea has been submitted! Thank you for contributing.'
         })
         setFormData({ title: '', prompt: '' })
+        // Changed: Call onSuccess callback to refresh the list
+        onSuccess?.()
       } else {
         setSubmitStatus({
           type: 'error',
