@@ -6,8 +6,9 @@ import CosmicBadge from '@/components/CosmicBadge'
 import RandomFavicon from '@/components/RandomFavicon'
 import ScrollToTop from '@/components/ScrollToTop'
 
-// Changed: Removed static favicon from metadata - now handled by RandomFavicon component
+// Changed: Added metadataBase for absolute URL resolution in OG/Twitter images
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://world-travels-food-blog.vercel.app'),
   title: {
     default: 'World Travels Food Blog | Culinary Adventures & Food Travel Stories',
     template: '%s | World Travels Food Blog',

@@ -9,7 +9,7 @@ interface PostPageProps {
   params: Promise<{ slug: string }>
 }
 
-// Changed: Enhanced generateMetadata with more SEO fields including keywords and article metadata
+// Changed: Enhanced generateMetadata with complete OG/Twitter social image support
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params
   const post = await getPostBySlug(slug)
@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     }
   }
 
-  // Changed: Extract keywords from post content and title for better SEO
   const title = post.title
   const description = post.metadata?.excerpt || 'A culinary adventure story from World Travels Food Blog'
   const location = post.metadata?.location
   const category = post.metadata?.category?.title
+  const authorName = post.metadata?.author?.metadata?.name || post.metadata?.author?.title
   
   // Changed: Generate keywords from title, location, and category
   const keywords = [
@@ -38,36 +38,59 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     'local food guide'
   ].filter(Boolean) as string[]
 
+  // Changed: Build the featured image URL with proper dimensions for social sharing
+  const featuredImageUrl = post.metadata?.featured_image?.imgix_url 
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format,compress`
+    : undefined
+
   return {
     title: `${title} | World Travels Food Blog`,
     description,
-    keywords, // Changed: Added keywords meta tag
-    authors: post.metadata?.author ? [{ name: post.metadata.author.metadata?.name || post.metadata.author.title }] : undefined,
+    keywords,
+    authors: authorName ? [{ name: authorName }] : undefined,
     openGraph: {
       title,
       description,
-      type: 'article', // Changed: Specified article type for blog posts
+      type: 'article',
       siteName: 'World Travels Food Blog',
       locale: 'en_US',
-      images: post.metadata?.featured_image?.imgix_url ? [
+      url: `/posts/${slug}`,
+      // Changed: Enhanced image configuration for social sharing
+      images: featuredImageUrl ? [
         {
-          url: `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format`,
+          url: featuredImageUrl,
+          secureUrl: featuredImageUrl,
           width: 1200,
           height: 630,
           alt: title,
+          type: 'image/jpeg',
         }
       ] : undefined,
+      // Changed: Added article-specific metadata
+      publishedTime: post.created_at,
+      modifiedTime: post.modified_at,
+      authors: authorName ? [authorName] : undefined,
+      section: category || 'Food Travel',
+      tags: keywords,
     },
-    twitter: { // Changed: Added Twitter card metadata
+    // Changed: Enhanced Twitter card metadata with complete image support
+    twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: post.metadata?.featured_image?.imgix_url 
-        ? [`${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format`] 
+      // Changed: Proper image array for Twitter
+      images: featuredImageUrl ? [featuredImageUrl] : undefined,
+      creator: post.metadata?.author?.metadata?.instagram 
+        ? `@${post.metadata.author.metadata.instagram}` 
         : undefined,
     },
-    alternates: { // Changed: Added canonical URL
+    alternates: {
       canonical: `/posts/${slug}`,
+    },
+    // Changed: Added other metadata for better SEO
+    other: {
+      'article:author': authorName || '',
+      'article:section': category || 'Food Travel',
     },
   }
 }
@@ -84,14 +107,19 @@ function BlogPostJsonLd({ post, url }: { post: NonNullable<Awaited<ReturnType<ty
   const author = post.metadata?.author
   const category = post.metadata?.category
   
+  // Changed: Build image URL for JSON-LD
+  const imageUrl = post.metadata?.featured_image?.imgix_url 
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format`
+    : undefined
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.metadata?.excerpt || '',
-    image: post.metadata?.featured_image?.imgix_url 
-      ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format`
-      : undefined,
+    image: imageUrl,
+    datePublished: post.created_at,
+    dateModified: post.modified_at,
     author: author ? {
       '@type': 'Person',
       name: author.metadata?.name || author.title,
