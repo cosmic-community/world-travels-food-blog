@@ -20,7 +20,7 @@ export async function getPosts(): Promise<Post[]> {
   try {
     const response = await cosmic.objects
       .find({ type: 'posts' })
-      .props(['id', 'title', 'slug', 'metadata'])
+      .props(['id', 'title', 'slug', 'metadata', 'created_at', 'modified_at'])
       .depth(1)
     
     return response.objects as Post[]
@@ -32,12 +32,12 @@ export async function getPosts(): Promise<Post[]> {
   }
 }
 
-// Get single post by slug
+// Get single post by slug - Changed: Added created_at and modified_at for SEO
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
     const response = await cosmic.objects
       .findOne({ type: 'posts', slug })
-      .props(['id', 'title', 'slug', 'metadata', 'content'])
+      .props(['id', 'title', 'slug', 'metadata', 'content', 'created_at', 'modified_at'])
       .depth(1)
     
     return response.object as Post
@@ -235,10 +235,10 @@ export async function createNewsletterSubscription(data: NewsletterFormData): Pr
         }
       }
     } catch (error) {
-          // 404 means no existing subscriber found, which is good
-          if (!hasStatus(error) || error.status !== 404) {
-            throw error
-          }
+      // 404 means no existing subscriber found, which is good
+      if (!hasStatus(error) || error.status !== 404) {
+        throw error
+      }
     }
 
     // Create new subscriber

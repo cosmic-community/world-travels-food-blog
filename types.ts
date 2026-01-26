@@ -33,9 +33,11 @@ export interface Category extends CosmicObject {
   };
 }
 
-// Post type
+// Post type - Changed: Added created_at and modified_at for SEO metadata
 export interface Post extends CosmicObject {
   type: 'posts';
+  created_at?: string;
+  modified_at?: string;
   metadata: {
     title: string;
     excerpt?: string;
