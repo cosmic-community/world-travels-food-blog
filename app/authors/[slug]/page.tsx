@@ -9,6 +9,7 @@ interface AuthorPageProps {
   params: Promise<{ slug: string }>
 }
 
+// Changed: Added Twitter Card metadata for author pages
 export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
   const { slug } = await params
   const author = await getAuthorBySlug(slug)
@@ -19,19 +20,33 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
     }
   }
   
+  const authorName = author.metadata?.name || author.title
+  const authorBio = author.metadata?.bio || 'Food writer and travel enthusiast'
+  const authorImageUrl = author.metadata?.photo?.imgix_url 
+    ? `${author.metadata.photo.imgix_url}?w=400&h=400&fit=crop&auto=format,compress`
+    : undefined
+  
   return {
-    title: `${author.metadata?.name || author.title} | World Travels Food Blog`,
-    description: author.metadata?.bio || 'Food writer and travel enthusiast',
+    title: `${authorName} | World Travels Food Blog`,
+    description: authorBio,
     openGraph: {
-      title: author.metadata?.name || author.title,
-      description: author.metadata?.bio,
-      images: author.metadata?.photo?.imgix_url ? [
+      title: authorName,
+      description: authorBio,
+      images: authorImageUrl ? [
         {
-          url: `${author.metadata.photo.imgix_url}?w=400&h=400&fit=crop&auto=format`,
+          url: authorImageUrl,
           width: 400,
           height: 400,
         }
       ] : undefined,
+    },
+    // Changed: Added Twitter Card metadata
+    twitter: {
+      card: 'summary',
+      title: authorName,
+      description: authorBio,
+      images: authorImageUrl ? [authorImageUrl] : undefined,
+      creator: author.metadata?.instagram ? `@${author.metadata.instagram}` : undefined,
     }
   }
 }

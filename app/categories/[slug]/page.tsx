@@ -9,6 +9,7 @@ interface CategoryPageProps {
   params: Promise<{ slug: string }>
 }
 
+// Changed: Added Twitter Card metadata for category pages
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params
   const category = await getCategoryBySlug(slug)
@@ -19,9 +20,23 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     }
   }
   
+  const categoryName = category.metadata?.name || category.title
+  const categoryDescription = category.metadata?.description || `Explore ${category.title} stories`
+  
   return {
-    title: `${category.title} | World Travels Food Blog`,
-    description: category.metadata?.description || `Explore ${category.title} stories`,
+    title: `${categoryName} | World Travels Food Blog`,
+    description: categoryDescription,
+    openGraph: {
+      title: categoryName,
+      description: categoryDescription,
+      type: 'website',
+    },
+    // Changed: Added Twitter Card metadata
+    twitter: {
+      card: 'summary_large_image',
+      title: categoryName,
+      description: categoryDescription,
+    }
   }
 }
 

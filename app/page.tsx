@@ -6,7 +6,7 @@ import SearchBar from '@/components/SearchBar'
 import NewsletterForm from '@/components/NewsletterForm'
 import type { Metadata } from 'next'
 
-// Changed: Added specific metadata for homepage SEO
+// Changed: Added specific metadata for homepage SEO with Twitter Card support
 export const metadata: Metadata = {
   title: 'World Travels Food Blog | Authentic Culinary Adventures & Food Travel Guides',
   description: 'Discover authentic culinary adventures from around the world. From Barcelona\'s La Boqueria market to Tokyo\'s best ramen shops, Bangkok street food to Milan\'s risotto - explore global food culture with passionate travelers.',
@@ -30,6 +30,12 @@ export const metadata: Metadata = {
     title: 'World Travels Food Blog | Authentic Culinary Adventures',
     description: 'Discover authentic culinary adventures from around the world. Explore street food guides, regional cuisines, and hidden local markets.',
     type: 'website',
+  },
+  // Changed: Added Twitter Card metadata for homepage
+  twitter: {
+    card: 'summary_large_image',
+    title: 'World Travels Food Blog | Authentic Culinary Adventures',
+    description: 'Discover authentic culinary adventures from around the world. Explore street food guides, regional cuisines, and hidden local markets.',
   },
 }
 

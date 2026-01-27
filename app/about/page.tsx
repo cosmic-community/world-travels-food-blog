@@ -3,6 +3,7 @@ import { getPageBySlug, getAuthors } from '@/lib/cosmic'
 import MarkdownContent from '@/components/MarkdownContent'
 import type { Metadata } from 'next'
 
+// Changed: Added Twitter Card metadata for about page
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug('about')
   
@@ -13,19 +14,32 @@ export async function generateMetadata(): Promise<Metadata> {
     }
   }
   
+  const pageTitle = page.metadata?.title || 'About Us'
+  const pageSubtitle = page.metadata?.subtitle || 'Learn more about our culinary adventures around the world.'
+  const heroImageUrl = page.metadata?.hero_image?.imgix_url 
+    ? `${page.metadata.hero_image.imgix_url}?w=1200&h=630&fit=crop&auto=format,compress`
+    : undefined
+  
   return {
-    title: `${page.metadata?.title || 'About Us'} | World Travels Food Blog`,
-    description: page.metadata?.subtitle || 'Learn more about our culinary adventures around the world.',
+    title: `${pageTitle} | World Travels Food Blog`,
+    description: pageSubtitle,
     openGraph: {
-      title: page.metadata?.title || 'About Us',
-      description: page.metadata?.subtitle,
-      images: page.metadata?.hero_image?.imgix_url ? [
+      title: pageTitle,
+      description: pageSubtitle,
+      images: heroImageUrl ? [
         {
-          url: `${page.metadata.hero_image.imgix_url}?w=1200&h=630&fit=crop&auto=format`,
+          url: heroImageUrl,
           width: 1200,
           height: 630,
         }
       ] : undefined,
+    },
+    // Changed: Added Twitter Card metadata
+    twitter: {
+      card: 'summary_large_image',
+      title: pageTitle,
+      description: pageSubtitle,
+      images: heroImageUrl ? [heroImageUrl] : undefined,
     }
   }
 }

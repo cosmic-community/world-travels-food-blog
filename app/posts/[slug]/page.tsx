@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 
   // Changed: Build the featured image URL with proper dimensions for social sharing
   const featuredImageUrl = post.metadata?.featured_image?.imgix_url 
-    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop`
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format,compress`
     : undefined
 
   return {
@@ -109,7 +109,7 @@ function BlogPostJsonLd({ post, url }: { post: NonNullable<Awaited<ReturnType<ty
   
   // Changed: Build image URL for JSON-LD
   const imageUrl = post.metadata?.featured_image?.imgix_url 
-    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop`
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format,compress`
     : undefined
 
   const jsonLd = {
