@@ -22,8 +22,9 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
   
   const authorName = author.metadata?.name || author.title
   const authorBio = author.metadata?.bio || 'Food writer and travel enthusiast'
+  // Changed: Use explicit JPG format for Twitter card compatibility (fm=jpg&q=80)
   const authorImageUrl = author.metadata?.photo?.imgix_url 
-    ? `${author.metadata.photo.imgix_url}?w=400&h=400&fit=crop&auto=format,compress`
+    ? `${author.metadata.photo.imgix_url}?w=400&h=400&fit=crop&fm=jpg&q=80`
     : undefined
   
   return {

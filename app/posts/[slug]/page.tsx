@@ -38,9 +38,9 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     'local food guide'
   ].filter(Boolean) as string[]
 
-  // Changed: Build the featured image URL with proper dimensions for social sharing
+  // Changed: Use explicit JPG format for Twitter card compatibility (fm=jpg&q=80 instead of auto=format,compress)
   const featuredImageUrl = post.metadata?.featured_image?.imgix_url 
-    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format,compress`
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&fm=jpg&q=80`
     : undefined
 
   return {
@@ -107,9 +107,9 @@ function BlogPostJsonLd({ post, url }: { post: NonNullable<Awaited<ReturnType<ty
   const author = post.metadata?.author
   const category = post.metadata?.category
   
-  // Changed: Build image URL for JSON-LD
+  // Changed: Use explicit JPG format for JSON-LD (fm=jpg&q=80)
   const imageUrl = post.metadata?.featured_image?.imgix_url 
-    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=format,compress`
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&fm=jpg&q=80`
     : undefined
 
   const jsonLd = {
