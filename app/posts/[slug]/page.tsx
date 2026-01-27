@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 
   // Changed: Build the featured image URL with proper dimensions for social sharing
   const featuredImageUrl = post.metadata?.featured_image?.imgix_url 
-    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=compress`
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop`
     : undefined
 
   return {
@@ -109,7 +109,7 @@ function BlogPostJsonLd({ post, url }: { post: NonNullable<Awaited<ReturnType<ty
   
   // Changed: Build image URL for JSON-LD
   const imageUrl = post.metadata?.featured_image?.imgix_url 
-    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop&auto=compress`
+    ? `${post.metadata.featured_image.imgix_url}?w=1200&h=630&fit=crop`
     : undefined
 
   const jsonLd = {
@@ -129,7 +129,7 @@ function BlogPostJsonLd({ post, url }: { post: NonNullable<Awaited<ReturnType<ty
       name: 'World Travels Food Blog',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&h=200&fit=crop&auto=compress',
+        url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&h=200&fit=crop',
       },
     },
     mainEntityOfPage: {
