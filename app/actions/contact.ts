@@ -26,19 +26,22 @@ export async function submitContactForm(
 
   try {
     // Send email using Resend
+    // Changed: Added replyTo so you can respond directly to the user
     const { error: emailError } = await resend.emails.send({
       from: EMAIL_FROM,
       to: EMAIL_TO,
+      replyTo: trimmedData.email,
       subject: `New Contact Form Submission from ${trimmedData.name}`,
       html: `
         <h2>New Contact Form Submission</h2>
         <p><strong>Name:</strong> ${trimmedData.name}</p>
-        <p><strong>Email:</strong> ${trimmedData.email}</p>
+        <p><strong>Email:</strong> <a href="mailto:${trimmedData.email}">${trimmedData.email}</a></p>
         <p><strong>Message:</strong></p>
         <p>${trimmedData.message.replace(/\n/g, '<br>')}</p>
         <hr>
         <p style="color: #666; font-size: 12px;">
           This message was sent from the World Travels Food Blog contact form.
+          You can reply directly to this email to respond to ${trimmedData.name}.
         </p>
       `,
       text: `
@@ -52,6 +55,7 @@ ${trimmedData.message}
 
 ---
 This message was sent from the World Travels Food Blog contact form.
+Reply to this email to respond to ${trimmedData.name}.
       `
     })
 
