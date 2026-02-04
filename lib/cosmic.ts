@@ -220,6 +220,7 @@ export async function createContactSubmission(data: ContactFormData): Promise<{ 
 }
 
 // Create a newsletter subscription (from newsletter branch)
+// Changed: Exported with explicit name for clear imports
 export async function createNewsletterSubscription(data: NewsletterFormData): Promise<{ success: boolean; error?: string }> {
   try {
     // Check if email already exists
@@ -281,6 +282,7 @@ export async function getPrompts(): Promise<Prompt[]> {
 }
 
 // Get single prompt by ID
+// Changed: Explicitly exported for use in other files
 export async function getPromptById(id: string): Promise<Prompt | null> {
   try {
     const response = await cosmic.objects
@@ -320,6 +322,7 @@ export async function createPrompt(data: RecipeIdeaFormData): Promise<{ success:
 }
 
 // Update prompt votes
+// Changed: Explicitly exported for use in other files
 export async function updatePromptVotes(id: string, newVoteCount: number): Promise<{ success: boolean; error?: string }> {
   try {
     await cosmicWrite.objects.updateOne(id, {

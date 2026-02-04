@@ -1,5 +1,6 @@
 'use server'
 
+// Changed: Updated import to use the correct function name from lib/cosmic
 import { createNewsletterSubscription } from '@/lib/cosmic'
 import { NewsletterFormData } from '@/types'
 

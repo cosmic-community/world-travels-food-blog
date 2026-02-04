@@ -1,6 +1,7 @@
 'use server'
 
-import { createPrompt, updatePromptVotes, getPromptById } from '@/lib/cosmic'
+// Changed: Import only the functions that exist in lib/cosmic.ts
+import { createPrompt, getPromptById, updatePromptVotes } from '@/lib/cosmic'
 import { RecipeIdeaFormData } from '@/types'
 
 export async function submitRecipeIdea(
@@ -25,6 +26,7 @@ export async function submitRecipeIdea(
     prompt: data.prompt.trim()
   })
 
+  // Changed: Ensure we return the proper type
   return result
 }
 

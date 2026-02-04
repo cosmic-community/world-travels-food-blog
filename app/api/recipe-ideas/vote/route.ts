@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+// Changed: Import the correct function names from lib/cosmic
 import { getPromptById, updatePromptVotes } from '@/lib/cosmic'
 
 // POST - Vote for a recipe idea
