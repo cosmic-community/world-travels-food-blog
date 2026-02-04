@@ -1,6 +1,7 @@
 'use server'
 
 import { createContactSubmission } from '@/lib/cosmic'
+import { resend, EMAIL_FROM, EMAIL_TO } from '@/lib/resend'
 import { ContactFormData } from '@/types'
 
 export async function submitContactForm(
@@ -17,12 +18,60 @@ export async function submitContactForm(
     return { success: false, error: 'Please enter a valid email address.' }
   }
 
-  // Submit to Cosmic
-  const result = await createContactSubmission({
+  const trimmedData = {
     name: data.name.trim(),
     email: data.email.trim().toLowerCase(),
     message: data.message.trim()
-  })
+  }
 
-  return result
+  try {
+    // Send email using Resend
+    const { error: emailError } = await resend.emails.send({
+      from: EMAIL_FROM,
+      to: EMAIL_TO,
+      subject: `New Contact Form Submission from ${trimmedData.name}`,
+      html: `
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${trimmedData.name}</p>
+        <p><strong>Email:</strong> ${trimmedData.email}</p>
+        <p><strong>Message:</strong></p>
+        <p>${trimmedData.message.replace(/\n/g, '<br>')}</p>
+        <hr>
+        <p style="color: #666; font-size: 12px;">
+          This message was sent from the World Travels Food Blog contact form.
+        </p>
+      `,
+      text: `
+New Contact Form Submission
+
+Name: ${trimmedData.name}
+Email: ${trimmedData.email}
+
+Message:
+${trimmedData.message}
+
+---
+This message was sent from the World Travels Food Blog contact form.
+      `
+    })
+
+    if (emailError) {
+      console.error('Resend email error:', emailError)
+      return { 
+        success: false, 
+        error: 'Failed to send email. Please try again later.' 
+      }
+    }
+
+    // Also save to Cosmic CMS for record keeping
+    await createContactSubmission(trimmedData)
+
+    return { success: true }
+  } catch (error) {
+    console.error('Contact form submission error:', error)
+    return { 
+      success: false, 
+      error: 'Failed to submit contact form. Please try again later.' 
+    }
+  }
 }
